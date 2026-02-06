@@ -100,7 +100,7 @@ body{
 
   <div class="controls">
     <button class="play" onclick="togglePlay()">▶</button>
-    <input type="range" class="progress" id="progress" value="0">
+    <input type="range" class="progress" value="0" min="0" max="100">
   </div>
 </div>
 
@@ -125,6 +125,23 @@ audio.addEventListener('timeupdate',()=>{
 
 progress.addEventListener('input',()=>{
   audio.currentTime = (progress.value / 100) * audio.duration;
+});
+</script><script>
+const audio = document.querySelector('audio');
+const progress = document.querySelector('.progress');
+
+function updateProgress(){
+  if(!audio.duration) return;
+  const percent = (audio.currentTime / audio.duration) * 100;
+  progress.value = percent;
+  progress.style.background = `linear-gradient(to right, #1db954 ${percent}%, #404040 ${percent}%)`;
+}
+
+audio.addEventListener('timeupdate', updateProgress);
+progress.addEventListener('input', () => {
+  if(audio.duration){
+    audio.currentTime = (progress.value / 100) * audio.duration;
+  }
 });
 </script></body>
 </html>
