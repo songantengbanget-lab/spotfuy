@@ -1,70 +1,110 @@
 <!DOCTYPE html><html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Spotify Clone</title>
+<title>Spotify UI Clone</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#121212;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
+  background:linear-gradient(180deg,#1db954 0%,#121212 40%);
   color:#fff;
-}
-.app{
-  display:flex;
-  flex-direction:column;
-  height:100vh;
 }
 .header{
   padding:16px;
+  font-weight:700;
   font-size:18px;
-  font-weight:bold;
 }
-.main{
-  flex:1;
+.container{
   padding:16px;
 }
-.card{
+.player-card{
   background:#181818;
-  border-radius:16px;
-  padding:16px;
+  border-radius:20px;
+  padding:20px;
+  max-width:400px;
+  margin:0 auto;
 }
 .cover{
   width:100%;
-  border-radius:12px;
-  margin-bottom:12px;
+  border-radius:14px;
+  margin-bottom:16px;
 }
 .title{
-  font-size:20px;
-  font-weight:bold;
+  font-size:22px;
+  font-weight:700;
 }
 .artist{
-  color:#aaa;
-  margin-bottom:12px;
+  color:#b3b3b3;
+  margin-bottom:20px;
 }
-audio{width:100%}
-.bottom{
+.controls{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.play{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#1db954;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  color:#000;
+  border:none;
+}
+.progress{
+  width:100%;
+}
+.footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
   background:#181818;
   padding:12px 16px;
-  border-top:1px solid #222;
+  text-align:center;
+  color:#aaa;
 }
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="header">Web Lagu</div>
-  <div class="main">
-    <div class="card">
-      <img src="cover1.jpg" class="cover">
+  <div class="header">Web Lagu</div>  <div class="container">
+    <div class="player-card">
+      <img src="cover1.jpg" class="cover" alt="Cover Lagu">
       <div class="title">About You</div>
-      <div class="artist">The 1975</div>
-      <audio controls>
-        <source src="aboutyou.mp3" type="audio/mpeg">
-      </audio>
-    </div>
+      <div class="artist">The 1975</div><audio id="audio" src="aboutyou.mp3"></audio>
+
+  <div class="controls">
+    <button class="play" onclick="togglePlay()">▶</button>
+    <input type="range" class="progress" id="progress" value="0">
   </div>
-  <div class="bottom">Now Playing</div>
 </div>
-</body>
+
+  </div>  <div class="footer">Spotify‑style Offline Music Player</div><script>
+const audio = document.getElementById('audio');
+const progress = document.getElementById('progress');
+const playBtn = document.querySelector('.play');
+
+function togglePlay(){
+  if(audio.paused){
+    audio.play();
+    playBtn.textContent = '❚❚';
+  } else {
+    audio.pause();
+    playBtn.textContent = '▶';
+  }
+}
+
+audio.addEventListener('timeupdate',()=>{
+  progress.value = (audio.currentTime / audio.duration) * 100 || 0;
+});
+
+progress.addEventListener('input',()=>{
+  audio.currentTime = (progress.value / 100) * audio.duration;
+});
+</script></body>
 </html>
