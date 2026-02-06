@@ -1,53 +1,70 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Web Lagu</title>
-
+<title>Spotify Clone</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  height:100vh;
-  background:linear-gradient(160deg,#1db954,#121212 60%);
+  font-family:Arial,Helvetica,sans-serif;
+  background:#121212;
+  color:#fff;
+}
+.app{
   display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:Arial, sans-serif;
-  color:white;
+  flex-direction:column;
+  height:100vh;
 }
-.player{
+.header{
+  padding:16px;
+  font-size:18px;
+  font-weight:bold;
+}
+.main{
+  flex:1;
+  padding:16px;
+}
+.card{
   background:#181818;
-  padding:20px;
-  border-radius:20px;
-  width:320px;
-  text-align:center;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  border-radius:16px;
+  padding:16px;
 }
-img{
+.cover{
   width:100%;
-  border-radius:15px;
-  margin-bottom:15px;
+  border-radius:12px;
+  margin-bottom:12px;
 }
-audio{
-  width:100%;
-  margin-top:10px;
+.title{
+  font-size:20px;
+  font-weight:bold;
 }
-h2{margin:5px 0}
-p{margin:0;color:#aaa}
+.artist{
+  color:#aaa;
+  margin-bottom:12px;
+}
+audio{width:100%}
+.bottom{
+  background:#181818;
+  padding:12px 16px;
+  border-top:1px solid #222;
+}
 </style>
 </head>
-
 <body>
-
-<div class="player">
-  <img src="cover1.jpg" alt="cover">
-  <h2>About You</h2>
-  <p>The 1975</p>
-
-  <audio controls>
-    <source src="aboutyou.mp3" type="audio/mpeg">
-  </audio>
+<div class="app">
+  <div class="header">Web Lagu</div>
+  <div class="main">
+    <div class="card">
+      <img src="cover1.jpg" class="cover">
+      <div class="title">About You</div>
+      <div class="artist">The 1975</div>
+      <audio controls>
+        <source src="aboutyou.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>
+  <div class="bottom">Now Playing</div>
 </div>
-
 </body>
 </html>
