@@ -4,27 +4,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Web Lagu</title><style>
 *{box-sizing:border-box;font-family:system-ui,sans-serif}
-body{
-  margin:0;min-height:100vh;
-  background:#000;
-  display:flex;justify-content:center;align-items:center;color:#fff;
-  overflow:hidden;
-}
-body::before{
-  content:"";
-  position:fixed;inset:-40px;
-  background:var(--bg) center/cover no-repeat;
-  filter:blur(40px) brightness(.5);
-  z-index:-1;
-}
-.player{
-  width:340px;background:#121212;border-radius:22px;padding:16px;
-  box-shadow:0 20px 40px rgba(0,0,0,.6)
-}
-.cover{
-  width:100%;aspect-ratio:1/1;border-radius:16px;
-  background-size:cover;background-position:center;margin-bottom:14px
-}
+body{margin:0;min-height:100vh;background:#000;display:flex;justify-content:center;align-items:center;color:#fff;overflow:hidden}
+body::before{content:"";position:fixed;inset:-40px;background:var(--bg) center/cover no-repeat;filter:blur(40px) brightness(.5);z-index:-1}
+.player{width:360px;background:#121212;border-radius:22px;padding:16px;box-shadow:0 20px 40px rgba(0,0,0,.6)}
+.cover{width:100%;aspect-ratio:1/1;border-radius:16px;background-size:cover;background-position:center;margin-bottom:14px;transition:.3s}
 .title{font-size:22px;font-weight:700}
 .artist{color:#aaa;margin-bottom:10px}
 .progress-bg{height:4px;background:#444;border-radius:2px;overflow:hidden}
@@ -32,12 +15,12 @@ body::before{
 #progress{width:100%;margin-top:-8px;background:transparent;-webkit-appearance:none}
 #progress::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#1db954}
 .time{display:flex;justify-content:space-between;font-size:12px;color:#ccc;margin:4px 0 10px}
-.controls{display:flex;justify-content:center;gap:18px}
-button{
-  width:50px;height:50px;border-radius:50%;border:none;
-  background:#1db954;color:#000;font-size:20px
-}
-.play{transform:scale(1.1)}
+.controls{display:flex;justify-content:center;gap:10px;margin-bottom:10px}
+button{width:44px;height:44px;border-radius:50%;border:none;background:#1db954;color:#000;font-size:18px;transition:.2s}
+button:active{transform:scale(.9)}
+.playlist{max-height:150px;overflow:auto;margin-top:8px}
+.playlist div{padding:6px;border-bottom:1px solid #222;font-size:14px;cursor:pointer}
+.playlist .active{color:#1db954}
 </style></head>
 <body><div class="player">
   <div class="cover" id="cover"></div>
@@ -45,17 +28,20 @@ button{
   <div class="artist" id="artist"></div>  <div class="progress-bg"><div class="progress-fill" id="fill"></div></div>
   <input type="range" id="progress" value="0" min="0" max="100">
   <div class="time"><span id="current">0:00</span><span id="duration">0:00</span></div>  <div class="controls">
+    <button onclick="toggleShuffle()" id="shuffleBtn">🔀</button>
     <button onclick="prev()">⏮</button>
     <button class="play" id="playBtn" onclick="toggle()">▶</button>
     <button onclick="next()">⏭</button>
-  </div><audio id="audio" preload="metadata" playsinline></audio>
+    <button onclick="toggleRepeat()" id="repeatBtn">🔁</button>
+  </div>  <div class="playlist" id="playlist"></div><audio id="audio" preload="metadata" playsinline></audio>
 
 </div><script>
 const songs=[
  {title:"About You",artist:"The 1975",audio:"aboutyou.mp3",cover:"cover1.jpg"},
  {title:"Happines",artist:"Unknown",audio:"happines.mp3",cover:"cover2.jpg"}
 ];
-let i=0;
+let shuffle=false, repeat=false;
+let i=0;const playlistEl=document.getElementById('playlist');
 const audio=document.getElementById('audio');
 const cover=document.getElementById('cover');
 const titleEl=document.getElementById('title');
@@ -74,10 +60,21 @@ function loadSong(){
  titleEl.textContent=s.title;
  artistEl.textContent=s.artist;
  playBtn.textContent='▶';
+ [...playlistEl.children].forEach((el,idx)=>el.classList.toggle('active',idx===i));
+})`;
+ document.body.style.setProperty('--bg',`url(${s.cover})`);
+ titleEl.textContent=s.title;
+ artistEl.textContent=s.artist;
+ playBtn.textContent='▶';
 }
 function format(t){const m=Math.floor(t/60);const s=Math.floor(t%60).toString().padStart(2,'0');return m+':'+s}
 function toggle(){if(audio.paused){audio.play();playBtn.textContent='⏸'}else{audio.pause();playBtn.textContent='▶'}}
-function next(){i=(i+1)%songs.length;loadSong();audio.play();playBtn.textContent='⏸'}
+function next(){
+ if(shuffle){i=Math.floor(Math.random()*songs.length)}
+ else{i=(i+1)%songs.length}
+ songs.forEach((s,idx)=>{const d=document.createElement('div');d.textContent=s.title+' – '+s.artist;d.onclick=()=>{i=idx;loadSong();audio.play();playBtn.textContent='⏸'};playlistEl.appendChild(d)});
+loadSong();audio.play();playBtn.textContent='⏸'
+}
 function prev(){i=(i-1+songs.length)%songs.length;loadSong();audio.play();playBtn.textContent='⏸'}
 
 audio.addEventListener('loadedmetadata',()=>{duration.textContent=format(audio.duration)})
@@ -86,8 +83,10 @@ audio.addEventListener('timeupdate',()=>{
  progress.value=p;fill.style.width=p+'%';current.textContent=format(audio.currentTime)
 });
 progress.addEventListener('input',()=>{audio.currentTime=(progress.value/100)*audio.duration});
-audio.addEventListener('ended',next);
+audio.addEventListener('ended',()=>{repeat?audio.play():next()});
 
 loadSong();
 </script></body>
 </html>
+function toggleShuffle(){shuffle=!shuffle;document.getElementById('shuffleBtn').style.opacity=shuffle?1:.5}
+function toggleRepeat(){repeat=!repeat;document.getElementById('repeatBtn').style.opacity=repeat?1:.5}
